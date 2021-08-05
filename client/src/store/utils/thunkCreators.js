@@ -72,7 +72,11 @@ export const logout = (id) => async (dispatch) => {
 export const fetchConversations = () => async (dispatch) => {
   try {
     const { data } = await axios.get("/api/conversations");
-    dispatch(gotConversations(data));
+    dispatch(
+      gotConversations(
+        data.map((convo) => ({ ...convo, messages: convo.messages.reverse() }))
+      )
+    );
   } catch (error) {
     console.error(error);
   }
