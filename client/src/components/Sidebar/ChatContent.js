@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Box, Typography, Badge } from "@material-ui/core";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 
@@ -37,9 +37,26 @@ const ChatContent = (props) => {
   const { conversation } = props;
   const { latestMessageText, otherUser } = conversation;
 
+  const unreadMessages = useMemo(() => {
+    if (!conversation.unreadMessage) return 0;
+    let total = 0;
+    if (otherUser.username === "hualing")
+      console.log(`START: ${conversation.messages.length}`);
+
+    for (let i = conversation.messages.length - 1; i >= 0; i--) {
+      if (conversation.messages[i].senderId === otherUser.id) {
+        total += 1;
+        continue;
+      }
+      break;
+    }
+    if (otherUser.username === "hualing") console.log(`hualing: ${total}`);
+    return total;
+  }, [conversation, otherUser]);
+
   return (
     <Box className={classes.root}>
-      <StyledBadge badgeContent={4} color="primary">
+      <StyledBadge badgeContent={unreadMessages} color="primary">
         <Box>
           <Typography className={classes.username}>
             {otherUser.username}

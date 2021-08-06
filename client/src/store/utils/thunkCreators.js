@@ -121,3 +121,13 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
     console.error(error);
   }
 };
+
+export const sendConversationRead = async (conversationId) => {
+  try {
+    await axios.post(`/api/conversations/read`, {
+      conversationId,
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};

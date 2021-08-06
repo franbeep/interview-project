@@ -25,6 +25,10 @@ router.post("/", async (req, res, next) => {
       }
       // if we already know conversation id is valid, we can save time
       // and just add it to message and return
+      await Conversation.update(
+        { unreadMessage: true },
+        { where: { id: conversation.id } }
+      );
       const message = await Message.create({ senderId, text, conversationId });
       return res.json({ message, sender });
     }
@@ -42,6 +46,10 @@ router.post("/", async (req, res, next) => {
         sender.online = true;
       }
     }
+    await Conversation.update(
+      { unreadMessage: true },
+      { where: { id: conversation.id } }
+    );
     const message = await Message.create({
       senderId,
       text,
