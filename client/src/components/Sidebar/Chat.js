@@ -25,7 +25,10 @@ class Chat extends Component {
   handleClick = async (conversation) => {
     await this.props.setActiveChat(conversation.otherUser.username);
     if (this.props.user.id !== conversation.latestSender) {
-      await sendConversationRead(conversation.id);
+      await sendConversationRead(
+        conversation.id,
+        conversation.messages[conversation.messages.length - 1].id
+      );
       await this.props.setConvoRead(conversation.id);
     }
   };

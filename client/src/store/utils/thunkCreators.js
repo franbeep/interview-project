@@ -122,10 +122,14 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
   }
 };
 
-export const sendConversationRead = async (conversationId) => {
+export const sendConversationRead = async (
+  conversationId,
+  lastReadMessageId
+) => {
   try {
     await axios.post(`/api/conversations/read`, {
       conversationId,
+      lastReadMessageId,
     });
   } catch (error) {
     console.error(error);

@@ -19,7 +19,7 @@ router.get("/", async (req, res, next) => {
           user2Id: userId,
         },
       },
-      attributes: ["id", "unreadMessage"],
+      attributes: ["id", "lastReadMessage"],
       order: [[Message, "createdAt", "DESC"]],
       include: [
         { model: Message, order: ["createdAt", "DESC"] },
@@ -86,10 +86,14 @@ router.post("/read", async (req, res, next) => {
       return res.sendStatus(401);
     }
 
-    const { conversationId } = req.body;
+    const { conversationId, lastReadMessageId } = req.body;
+
+    console.log(
+      `api/conversations/read: ${conversationId} ${lastReadMessageId}`
+    );
 
     const conversation = await Conversation.update(
-      { unreadMessage: false },
+      { lastReadMessage: lastReadMessageId },
       { where: { id: conversationId } }
     );
     res.json(conversation);

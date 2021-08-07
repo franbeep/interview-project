@@ -38,19 +38,17 @@ const ChatContent = (props) => {
   const { latestMessageText, otherUser } = conversation;
 
   const unreadMessages = useMemo(() => {
-    if (!conversation.unreadMessage) return 0;
     let total = 0;
-    if (otherUser.username === "hualing")
-      console.log(`START: ${conversation.messages.length}`);
-
     for (let i = conversation.messages.length - 1; i >= 0; i--) {
-      if (conversation.messages[i].senderId === otherUser.id) {
+      if (
+        conversation.messages[i].senderId === otherUser.id &&
+        conversation.messages[i].id > conversation.lastReadMessage
+      ) {
         total += 1;
         continue;
       }
       break;
     }
-    if (otherUser.username === "hualing") console.log(`hualing: ${total}`);
     return total;
   }, [conversation, otherUser]);
 
