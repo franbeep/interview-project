@@ -37,6 +37,7 @@ const ChatContent = (props) => {
   const { conversation } = props;
   const { latestMessageText, otherUser } = conversation;
 
+  // saves the number of unread messages of the conversation
   const unreadMessages = useMemo(() => {
     let total = 0;
     for (let i = conversation.messages.length - 1; i >= 0; i--) {

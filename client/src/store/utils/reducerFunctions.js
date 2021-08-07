@@ -89,6 +89,7 @@ export const addNewConvoToStore = (state, recipientId, message) => {
   });
 };
 
+// sets the conversation to read at the client
 export const setConvoRead = (state, convoId) => {
   return state.map((convo) => {
     if (convo.id === convoId) {

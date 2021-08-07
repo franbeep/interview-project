@@ -24,6 +24,7 @@ const styles = {
 class Chat extends Component {
   handleClick = async (conversation) => {
     await this.props.setActiveChat(conversation.otherUser.username);
+    // if you're not the one that sent, set the messages to read
     if (this.props.user.id !== conversation.latestSender) {
       await sendConversationRead(
         conversation.id,

@@ -122,6 +122,8 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
   }
 };
 
+// sets the conversation to read at the db
+// till lastReadMessageId
 export const sendConversationRead = async (
   conversationId,
   lastReadMessageId
