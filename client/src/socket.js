@@ -21,7 +21,9 @@ socket.on("connect", () => {
   });
   socket.on("new-message", async (data) => {
     const { activeConversation } = store.getState();
-    await sendConversationRead(data.message.conversationId, data.message.id); // TODO: pass this to the backend?
+    if (activeConversation.otherUser.id === data.message.senderId)
+      await sendConversationRead(data.message.conversationId, data.message.id); // TODO: pass this to the backend?
+
     store.dispatch(
       setNewMessage(data.message, activeConversation, data.sender)
     );

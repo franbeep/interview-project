@@ -23,9 +23,13 @@ const styles = {
 
 class Chat extends Component {
   handleClick = async (conversation) => {
-    await this.props.setActiveChat(conversation.otherUser.username);
-    // if you're not the one that sent, set the messages to read
-    if (this.props.user.id !== conversation.latestSender) {
+    await this.props.setActiveChat(conversation);
+    // if you're not the one that sent the last message
+    // and its an empty chat, set the messages to read
+    if (
+      conversation.messages.length > 0 &&
+      this.props.user.id !== conversation.latestSender
+    ) {
       await sendConversationRead(
         conversation.id,
         conversation.messages[conversation.messages.length - 1].id
@@ -62,8 +66,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setActiveChat: (id) => {
-      dispatch(setActiveChat(id));
+    setActiveChat: (convo) => {
+      dispatch(setActiveChat(convo));
     },
     setConvoRead: (convoId) => {
       dispatch(readConversation(convoId));

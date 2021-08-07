@@ -90,10 +90,6 @@ router.post("/read", async (req, res, next) => {
 
     const { conversationId, lastReadMessageId } = req.body;
 
-    console.log(
-      `api/conversations/read: ${conversationId} ${lastReadMessageId}`
-    );
-
     const conversation = await Conversation.update(
       { lastReadMessage: lastReadMessageId },
       { where: { id: conversationId } }
