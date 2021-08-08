@@ -10,6 +10,8 @@ require("dotenv").config();
 const { app, sessionStore } = require("../app");
 const http = require("http");
 const db = require("../db");
+const { resetOnlineUsers } = require("../onlineUsers");
+resetOnlineUsers();
 
 /**
  * Get port from environment and store in Express.

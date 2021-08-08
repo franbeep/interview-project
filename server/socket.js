@@ -1,6 +1,6 @@
 // const { app, sessionStore } = require("./app");
 const { userMiddleware } = require("./middlewares");
-const onlineUsers = require("./onlineUsers");
+const { addOnlineUser, removeOnlineUser } = require("./onlineUsers");
 const { Conversation, User } = require("./db/models");
 const { Op } = require("sequelize");
 
@@ -25,13 +25,19 @@ const listenSocket = (io) => {
     socket.on("go-online", onGoOnline(socket));
     socket.on("new-message", onNewMessage(socket));
     socket.on("logout", onLogout(socket));
+    // !Turns offline when closing window, however
+    // !it does not work if more than 1 tab is open
+    // socket.on("disconnect", async () => {
+    //   const { id } = socket.request.user;
+    //   await removeOnlineUser(id);
+    //   socket.broadcast.emit("remove-offline-user", id);
+    // });
   });
 };
 
-const onGoOnline = (socket) => (id) => {
-  if (!onlineUsers.includes(id)) {
-    onlineUsers.push(id); // TODO: add redis to store this ?
-  }
+const onGoOnline = (socket) => async (id) => {
+  // * add redis to store this ? [OK]
+  await addOnlineUser(id);
 
   // send the user who just went online to everyone else who is already online
   socket.broadcast.emit("add-online-user", id);
@@ -76,13 +82,11 @@ const onNewMessage = (socket) => async (data) => {
   }
 };
 
-const onLogout = (socket) => (id) => {
-  if (onlineUsers.includes(id)) {
-    // TODO: again: add redis to store/remove this ?
-    userIndex = onlineUsers.indexOf(id);
-    onlineUsers.splice(userIndex, 1);
-    socket.broadcast.emit("remove-offline-user", id);
-  }
+const onLogout = (socket) => async (id) => {
+  // * again: add redis to store/remove this ? [OK]
+  await removeOnlineUser(id);
+
+  socket.broadcast.emit("remove-offline-user", id);
 };
 
 module.exports = listenSocket;
