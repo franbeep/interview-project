@@ -1,6 +1,6 @@
 import React from "react";
-import { Redirect, useHistory } from "react-router-dom";
-import { connect } from "react-redux";
+import { useHistory } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Grid,
   Box,
@@ -11,20 +11,22 @@ import {
 } from "@material-ui/core";
 import { login } from "./store/utils/thunkCreators";
 
-const Login = (props) => {
+const Login = () => {
   const history = useHistory();
-  const { user, login } = props;
+  const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.user);
 
   const handleLogin = async (event) => {
     event.preventDefault();
     const username = event.target.username.value;
     const password = event.target.password.value;
 
-    await login({ username, password });
+    dispatch(login({ username, password }));
   };
 
   if (user.id) {
-    return <Redirect to="/home" />;
+    history.push("/home");
   }
 
   return (
@@ -66,18 +68,4 @@ const Login = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    user: state.user,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    login: (credentials) => {
-      dispatch(login(credentials));
-    },
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default Login;
