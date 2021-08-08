@@ -131,7 +131,7 @@ export const sendConversationRead = async (
   lastReadMessageId
 ) => {
   try {
-    await axios.post(`/api/conversations/read`, {
+    await axios.patch(`/api/conversations/read`, {
       conversationId,
       lastReadMessageId,
     });

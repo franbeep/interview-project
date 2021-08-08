@@ -82,7 +82,7 @@ router.get("/", async (req, res, next) => {
 
 // endpoint to set conversation to read till
 // the message appointed by lastReadMessageId
-router.post("/read", async (req, res, next) => {
+router.patch("/read", async (req, res, next) => {
   try {
     if (!req.user) {
       return res.sendStatus(401);
