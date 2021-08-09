@@ -22,7 +22,7 @@ const removeOnlineUser = async (user) => {
 
 const isUserOnline = async (user) => {
   const isMember = await redis.sismember("online-users", user);
-  return isMember > 0 ? true : false;
+  return isMember > 0;
 };
 
 module.exports = {
