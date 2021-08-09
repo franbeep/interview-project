@@ -73,7 +73,6 @@ export const logout = (id) => async (dispatch) => {
 export const fetchConversations = () => async (dispatch) => {
   try {
     const { data } = await axios.get("/api/conversations");
-    const { user } = store.getState();
     // reverses list of messages
     // and calculates the number of unread messages
     dispatch(
@@ -81,12 +80,6 @@ export const fetchConversations = () => async (dispatch) => {
         data.map((convo) => ({
           ...convo,
           messages: convo.messages.reverse(),
-          unreadMessages: convo.messages.reduce((total, currentMessage) => {
-            return convo.lastReadMessage < currentMessage.id &&
-              currentMessage.senderId !== user.id
-              ? total + 1
-              : total;
-          }, 0),
         }))
       )
     );
@@ -143,6 +136,7 @@ export const sendConversationRead = async (
   lastReadMessageId
 ) => {
   try {
+    // sends that you read that message
     await axios.patch(`/api/conversations/read`, {
       conversationId,
       lastReadMessageId,

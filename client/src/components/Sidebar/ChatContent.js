@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Box, Typography, Badge } from "@material-ui/core";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 
@@ -39,23 +39,7 @@ const ChatContent = (props) => {
   const classes = useStyles();
 
   const { conversation } = props;
-  const { latestMessageText, otherUser } = conversation;
-
-  // saves the number of unread messages of the conversation
-  const unreadMessages = useMemo(() => {
-    let total = 0;
-    for (let i = conversation.messages.length - 1; i >= 0; i--) {
-      if (
-        conversation.messages[i].senderId === otherUser.id &&
-        conversation.messages[i].id > conversation.lastReadMessage
-      ) {
-        total += 1;
-        continue;
-      }
-      break;
-    }
-    return total;
-  }, [conversation, otherUser]);
+  const { latestMessageText, otherUser, unreadMessages } = conversation;
 
   return (
     <Box className={classes.root}>
@@ -66,7 +50,7 @@ const ChatContent = (props) => {
           </Typography>
           <Typography
             className={`${classes.previewText} ${
-              unreadMessages && classes.boldText
+              unreadMessages > 0 && classes.boldText
             }`}
           >
             {latestMessageText}

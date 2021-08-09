@@ -10,21 +10,37 @@ export const addMessageToStore = (state, payload) => {
       lastReadMessage: -1,
       latestMessageText: message.text,
       latestSender: message.senderId,
+      unreadMessages: 1, // * OK
     };
     return [newConvo, ...state];
   }
 
   return state.map((convo) => {
     if (convo.id === message.conversationId) {
-      const convoCopy = { ...convo };
-      convoCopy.messages.push(message);
-      convoCopy.latestMessageText = message.text;
-      convoCopy.lastReadMessage =
-        message.senderId === convo.otherUser.id &&
-        activeConversation.id === convo.id
-          ? message.id
-          : convo.lastReadMessage;
-      convoCopy.latestSender = message.senderId;
+      let activeConversationId = activeConversation;
+      // edge case when you add new convos and it doesn't have an id
+      if (!activeConversationId)
+        activeConversationId =
+          message.senderId === convo.otherUser.id
+            ? message.conversationId
+            : undefined;
+
+      const unreadMessages =
+        activeConversationId === convo.id
+          ? 0
+          : message.senderId === convo.otherUser.id
+          ? convo.unreadMessages + 1
+          : convo.unreadMessages;
+
+      const convoCopy = {
+        ...convo,
+        messages: convo.messages.concat(message),
+        latestMessageText: message.text,
+        lastReadMessage: convo.lastReadMessage,
+        latestSender: message.senderId,
+        // * OK
+        unreadMessages,
+      };
 
       return convoCopy;
     } else {
@@ -69,7 +85,7 @@ export const addSearchedUsersToStore = (state, users) => {
   users.forEach((user) => {
     // only create a fake convo if we don't already have a convo with this user
     if (!currentUsers[user.id]) {
-      let fakeConvo = { otherUser: user, messages: [] };
+      const fakeConvo = { otherUser: user, messages: [], unreadMessages: 0 };
       newState.push(fakeConvo);
     }
   });
@@ -92,12 +108,22 @@ export const addNewConvoToStore = (state, recipientId, message) => {
 };
 
 // sets the conversation to read at the client
-export const setConvoRead = (state, convoId, messageId) => {
+export const setConvoRead = (state, conversationId, lastReadMessageId) => {
+  // sets the lastReadMessageId in the correct conversation
+
   return state.map((convo) => {
-    if (convo.id === convoId) {
-      const newConvo = { ...convo };
-      newConvo.lastReadMessage = convo.messages[convo.messages.length - 1].id;
-      return newConvo;
+    if (convo.id === conversationId) {
+      return { ...convo, lastReadMessage: lastReadMessageId };
+    }
+    return convo;
+  });
+};
+
+// resets to 0 the number of unread messages
+export const setResetUnreadMessages = (state, conversationId) => {
+  return state.map((convo) => {
+    if (convo.id === conversationId) {
+      return { ...convo, unreadMessages: 0 };
     }
     return convo;
   });

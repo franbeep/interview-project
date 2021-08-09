@@ -7,7 +7,12 @@ export const setActiveChat = (conversation) => {
   };
 };
 
-const initialState = { id: -1, otherUser: { id: -1, username: null } };
+const initialState = {
+  id: -1,
+  otherUser: { id: -1, username: null },
+  lastReadMessage: -1,
+  unreadMessages: 0,
+};
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
