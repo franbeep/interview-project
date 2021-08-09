@@ -4,6 +4,7 @@ import {
   setNewMessage,
   removeOfflineUser,
   addOnlineUser,
+  readConversation,
 } from "./store/conversations";
 import { sendConversationRead } from "./store/utils/thunkCreators";
 
@@ -27,6 +28,10 @@ socket.on("connect", () => {
     store.dispatch(
       setNewMessage(data.message, activeConversation, data.sender)
     );
+  });
+  socket.on("read-message", (data) => {
+    const { conversationId, lastReadMessageId } = data;
+    store.dispatch(readConversation(conversationId, lastReadMessageId));
   });
 });
 

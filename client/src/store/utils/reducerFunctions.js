@@ -20,7 +20,8 @@ export const addMessageToStore = (state, payload) => {
       convoCopy.messages.push(message);
       convoCopy.latestMessageText = message.text;
       convoCopy.lastReadMessage =
-        convo.otherUser.username === activeConversation.otherUser.username
+        message.senderId === convo.otherUser.id &&
+        activeConversation.id === convo.id
           ? message.id
           : convo.lastReadMessage;
       convoCopy.latestSender = message.senderId;
@@ -91,7 +92,7 @@ export const addNewConvoToStore = (state, recipientId, message) => {
 };
 
 // sets the conversation to read at the client
-export const setConvoRead = (state, convoId) => {
+export const setConvoRead = (state, convoId, messageId) => {
   return state.map((convo) => {
     if (convo.id === convoId) {
       const newConvo = { ...convo };
