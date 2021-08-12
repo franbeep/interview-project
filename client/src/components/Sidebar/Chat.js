@@ -3,6 +3,7 @@ import { Box } from "@material-ui/core";
 import { BadgeAvatar, ChatContent } from "../Sidebar";
 import { makeStyles } from "@material-ui/core/styles";
 import { setActiveChat } from "../../store/activeConversation";
+import { sendConversationRead } from "../../store/utils/thunkCreators";
 import { useDispatch } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
@@ -25,9 +26,18 @@ const Chat = ({ conversation }) => {
 
   const { otherUser } = conversation;
 
-  const handleClick = (conversation) => {
-    // TODO: Will be changing after PR #3 gets merged
-    dispatch(setActiveChat(conversation.otherUser.username));
+  const handleClick = async (conversation) => {
+    dispatch(setActiveChat(conversation));
+
+    // reads messages if there are unread ones
+    if (conversation.unreadMessages > 0) {
+      await dispatch(
+        sendConversationRead(
+          conversation.id,
+          conversation.messages[conversation.messages.length - 1].id
+        )
+      );
+    }
   };
 
   return (

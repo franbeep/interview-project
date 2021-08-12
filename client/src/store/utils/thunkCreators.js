@@ -1,10 +1,12 @@
 import axios from "axios";
 import socket from "../../socket";
+import store from "../../store";
 import {
   gotConversations,
   addConversation,
   setNewMessage,
   setSearchedUsers,
+  readConversation,
 } from "../conversations";
 import { gotUser, setFetchingStatus } from "../user";
 
@@ -72,9 +74,14 @@ export const logout = (id) => async (dispatch) => {
 export const fetchConversations = () => async (dispatch) => {
   try {
     const { data } = await axios.get("/api/conversations");
+    // reverses list of messages
+    // and calculates the number of unread messages
     dispatch(
       gotConversations(
-        data.map((convo) => ({ ...convo, messages: convo.messages.reverse() }))
+        data.map((convo) => ({
+          ...convo,
+          messages: convo.messages.reverse(),
+        }))
       )
     );
   } catch (error) {
@@ -104,7 +111,8 @@ export const postMessage = (body) => async (dispatch) => {
     if (!body.conversationId) {
       dispatch(addConversation(body.recipientId, data.message));
     } else {
-      dispatch(setNewMessage(data.message));
+      const { activeConversation } = store.getState();
+      dispatch(setNewMessage(data.message, activeConversation));
     }
 
     sendMessage(data, body);
@@ -121,3 +129,24 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
     console.error(error);
   }
 };
+
+// sets the conversation to read at the db
+// till lastReadMessageId
+export const sendConversationRead =
+  (conversationId, lastReadMessageId) => async (dispatch) => {
+    try {
+      // sends that you read that message
+      await axios.patch(`/api/conversations/read`, {
+        conversationId,
+        lastReadMessageId,
+      });
+
+      await dispatch(readConversation(conversationId, lastReadMessageId));
+      socket.emit("read-message", {
+        conversationId,
+        lastReadMessageId,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };

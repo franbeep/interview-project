@@ -1,21 +1,43 @@
 export const addMessageToStore = (state, payload) => {
-  const { message, sender } = payload;
+  const { message, activeConversation, sender } = payload;
+
   // if sender isn't null, that means the message needs to be put in a brand new convo
   if (sender !== null) {
     const newConvo = {
       id: message.conversationId,
       otherUser: sender,
       messages: [message],
+      lastReadMessage: -1,
+      latestMessageText: message.text,
+      latestSender: message.senderId,
+      unreadMessages: 1, // * OK
     };
-    newConvo.latestMessageText = message.text;
     return [newConvo, ...state];
   }
 
   return state.map((convo) => {
     if (convo.id === message.conversationId) {
-      const convoCopy = { ...convo };
-      convoCopy.messages.push(message);
-      convoCopy.latestMessageText = message.text;
+      let activeConversationId = activeConversation.id;
+      // edge case when you add new convos and it doesn't have an id
+      if (!activeConversationId && message.senderId === convo.otherUser.id)
+        activeConversationId = message.conversationId
+
+      const unreadMessages =
+        activeConversationId === convo.id
+          ? 0
+          : message.senderId === convo.otherUser.id
+          ? convo.unreadMessages + 1
+          : convo.unreadMessages;
+
+      const convoCopy = {
+        ...convo,
+        messages: convo.messages.concat(message),
+        latestMessageText: message.text,
+        lastReadMessage: convo.lastReadMessage,
+        latestSender: message.senderId,
+        // * OK
+        unreadMessages,
+      };
 
       return convoCopy;
     } else {
@@ -60,7 +82,7 @@ export const addSearchedUsersToStore = (state, users) => {
   users.forEach((user) => {
     // only create a fake convo if we don't already have a convo with this user
     if (!currentUsers[user.id]) {
-      let fakeConvo = { otherUser: user, messages: [] };
+      const fakeConvo = { otherUser: user, messages: [], unreadMessages: 0 };
       newState.push(fakeConvo);
     }
   });
@@ -79,5 +101,19 @@ export const addNewConvoToStore = (state, recipientId, message) => {
     } else {
       return convo;
     }
+  });
+};
+
+// sets the conversation to read at the client
+export const setConvoRead = (state, conversationId, lastReadMessageId) => {
+  return state.map((convo) => {
+    if (convo.id === conversationId) {
+      return {
+        ...convo,
+        lastReadMessage: lastReadMessageId,
+        unreadMessages: 0, // also sets the unread messages to 0
+      };
+    }
+    return convo;
   });
 };
