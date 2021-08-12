@@ -3,9 +3,7 @@ import { Box } from "@material-ui/core";
 import { SenderBubble, OtherUserBubble } from "../ActiveChat";
 import moment from "moment";
 
-const Messages = (props) => {
-  const { lastReadMessage, messages, otherUser, userId } = props;
-
+const Messages = ({ messages, otherUser, userId }) => {
   return (
     <Box>
       {messages.map((message) => {
