@@ -116,11 +116,37 @@ router.patch("/read", async (req, res, next) => {
 
     const { conversationId, lastReadMessageId } = req.body;
 
+    const message = await Message.findOne({
+      where: { id: lastReadMessageId },
+    });
+
+    // message not found
+    if (!message) res.sendStatus(404);
+
+    // if message is not part of the conversation, or the user is the message sender
+    if (
+      message.conversationId !== conversationId ||
+      message.senderId === req.user.id
+    )
+      return res.sendStatus(403);
+
     const conversation = await Conversation.update(
       { lastReadMessage: lastReadMessageId },
-      { where: { id: conversationId } }
+      {
+        where: {
+          id: conversationId,
+          [Op.or]: {
+            user1Id: req.user.id,
+            user2Id: req.user.id,
+          },
+        },
+      }
     );
-    res.json(conversation);
+
+    // if the user is not part of the conversation sends 403 too
+    if (!conversation) return res.sendStatus(403);
+
+    res.sendStatus(200);
   } catch (error) {
     next(error);
   }
