@@ -25,7 +25,9 @@ socket.on("connect", () => {
 
     // if you received a message in the actual conversation
     if (activeConversation.otherUser.id === data.message.senderId)
-      await sendConversationRead(data.message.conversationId, data.message.id);
+      await store.dispatch(
+        sendConversationRead(data.message.conversationId, data.message.id)
+      );
 
     store.dispatch(
       setNewMessage(data.message, activeConversation, data.sender)

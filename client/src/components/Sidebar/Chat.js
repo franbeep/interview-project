@@ -3,10 +3,7 @@ import { Box } from "@material-ui/core";
 import { BadgeAvatar, ChatContent } from "../Sidebar";
 import { withStyles } from "@material-ui/core/styles";
 import { setActiveChat } from "../../store/activeConversation";
-import {
-  readConversation,
-  resetUnreadMessages,
-} from "../../store/conversations";
+import { readConversation } from "../../store/conversations";
 import { sendConversationRead } from "../../store/utils/thunkCreators";
 import { connect } from "react-redux";
 
@@ -32,12 +29,10 @@ class Chat extends Component {
 
     if (conversation.unreadMessages > 0) {
       // sends to the backend that you read the message
-      await sendConversationRead(
+      await this.props.sendConversationRead(
         conversation.id,
         conversation.messages[conversation.messages.length - 1].id
       );
-      await this.props.setConvoRead(conversation.id);
-      await this.props.resetUnreadMessages(conversation.id);
     }
   };
 
@@ -75,8 +70,8 @@ const mapDispatchToProps = (dispatch) => {
     setConvoRead: (convoId) => {
       dispatch(readConversation(convoId));
     },
-    resetUnreadMessages: (convoId) => {
-      dispatch(resetUnreadMessages(convoId));
+    sendConversationRead: async (convoId, messageId) => {
+      await dispatch(sendConversationRead(convoId, messageId));
     },
   };
 };

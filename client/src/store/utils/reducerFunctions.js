@@ -17,7 +17,7 @@ export const addMessageToStore = (state, payload) => {
 
   return state.map((convo) => {
     if (convo.id === message.conversationId) {
-      let activeConversationId = activeConversation;
+      let activeConversationId = activeConversation.id;
       // edge case when you add new convos and it doesn't have an id
       if (!activeConversationId)
         activeConversationId =
@@ -109,21 +109,13 @@ export const addNewConvoToStore = (state, recipientId, message) => {
 
 // sets the conversation to read at the client
 export const setConvoRead = (state, conversationId, lastReadMessageId) => {
-  // sets the lastReadMessageId in the correct conversation
-
   return state.map((convo) => {
     if (convo.id === conversationId) {
-      return { ...convo, lastReadMessage: lastReadMessageId };
-    }
-    return convo;
-  });
-};
-
-// resets to 0 the number of unread messages
-export const setResetUnreadMessages = (state, conversationId) => {
-  return state.map((convo) => {
-    if (convo.id === conversationId) {
-      return { ...convo, unreadMessages: 0 };
+      return {
+        ...convo,
+        lastReadMessage: lastReadMessageId,
+        unreadMessages: 0, // also sets the unread messages to 0
+      };
     }
     return convo;
   });
