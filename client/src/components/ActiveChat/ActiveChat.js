@@ -24,14 +24,7 @@ const ActiveChat = () => {
   const classes = useStyles();
 
   const user = useSelector((state) => state.user);
-  // TODO: Will be changed to state.activeConversation after PR #3 be merged
-  const conversation = useSelector((state) =>
-    state.conversations.reduce(
-      (acc, convo) =>
-        convo.otherUser.username === state.activeConversation ? convo : acc,
-      {}
-    )
-  );
+  const conversation = useSelector((state) => state.activeConversation);
 
   return (
     <Box className={classes.root}>

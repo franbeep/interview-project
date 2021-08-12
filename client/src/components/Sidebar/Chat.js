@@ -20,22 +20,23 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 const Chat = ({ conversation }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
   const { otherUser } = conversation;
 
-  const handleClick = (conversation) => {
-    dispatch(setActiveChat(conversation.otherUser.username));
-    
+  const handleClick = async (conversation) => {
+    dispatch(setActiveChat(conversation));
+
     // reads messages if there are unread ones
     if (conversation.unreadMessages > 0) {
-      await dispatch(sendConversationRead(
-        conversation.id,
-        conversation.messages[conversation.messages.length - 1].id
-      ));
+      await dispatch(
+        sendConversationRead(
+          conversation.id,
+          conversation.messages[conversation.messages.length - 1].id
+        )
+      );
     }
   };
 

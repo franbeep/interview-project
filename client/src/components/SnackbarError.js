@@ -13,7 +13,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// TODO: destructure props
 const SnackbarError = ({ snackBarOpen, setSnackBarOpen, errorMessage }) => {
   const classes = useStyles();
 

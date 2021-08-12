@@ -12,6 +12,7 @@ const initialState = {
   otherUser: { id: -1, username: null },
   lastReadMessage: -1,
   unreadMessages: 0,
+  messages: [],
 };
 
 const reducer = (state = initialState, action) => {

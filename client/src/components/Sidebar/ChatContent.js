@@ -26,11 +26,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const StyledBadge = withStyles((theme) => ({
+  root: {
+    width: "100%",
+  },
+  badge: {
+    top: 20,
+    right: 30,
+    fontWeight: "bold",
+  },
+}))(Badge);
+
 const ChatContent = ({ conversation }) => {
   const classes = useStyles();
 
   const { latestMessageText, otherUser, unreadMessages } = conversation;
-
 
   return (
     <Box className={classes.root}>

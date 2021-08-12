@@ -21,23 +21,28 @@ const listenSocket = (io) => {
   });
 
   io.on("connection", (socket) => {
-    // * needs to check credentials [OK]
     socket.on("go-online", onGoOnline(socket));
+    socket.on("read-message", onReadMessage(socket));
     socket.on("new-message", onNewMessage(socket));
     socket.on("logout", onLogout(socket));
   });
 };
 
 const onGoOnline = (socket) => async (id) => {
-  // * add redis to store this ? [OK]
   await addOnlineUser(id);
 
   // send the user who just went online to everyone else who is already online
   socket.broadcast.emit("add-online-user", id);
 };
 
+const onReadMessage = (socket) => async (data) => {
+  socket.broadcast.emit("read-message", {
+    conversationId: data.conversationId,
+    lastReadMessageId: data.lastReadMessageId,
+  });
+};
+
 const onNewMessage = (socket) => async (data) => {
-  // * should emit only to the correct one [OK]
   const { user } = socket.request;
   const { message, sender } = data;
 
@@ -76,7 +81,6 @@ const onNewMessage = (socket) => async (data) => {
 };
 
 const onLogout = (socket) => async (id) => {
-  // * again: add redis to store/remove this ? [OK]
   await removeOnlineUser(id);
 
   socket.broadcast.emit("remove-offline-user", id);
