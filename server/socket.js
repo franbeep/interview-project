@@ -25,13 +25,6 @@ const listenSocket = (io) => {
     socket.on("go-online", onGoOnline(socket));
     socket.on("new-message", onNewMessage(socket));
     socket.on("logout", onLogout(socket));
-    // !Turns offline when closing window, however
-    // !it does not work if more than 1 tab is open
-    // socket.on("disconnect", async () => {
-    //   const { id } = socket.request.user;
-    //   await removeOnlineUser(id);
-    //   socket.broadcast.emit("remove-offline-user", id);
-    // });
   });
 };
 
