@@ -19,11 +19,8 @@ export const addMessageToStore = (state, payload) => {
     if (convo.id === message.conversationId) {
       let activeConversationId = activeConversation.id;
       // edge case when you add new convos and it doesn't have an id
-      if (!activeConversationId)
-        activeConversationId =
-          message.senderId === convo.otherUser.id
-            ? message.conversationId
-            : undefined;
+      if (!activeConversationId && message.senderId === convo.otherUser.id)
+        activeConversationId = message.conversationId
 
       const unreadMessages =
         activeConversationId === convo.id
